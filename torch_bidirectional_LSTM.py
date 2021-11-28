@@ -16,29 +16,28 @@ num_classes = 10
 sequence_length = 28
 learning_rate = 0.005
 batch_size = 64
-num_epochs = 3
+num_epochs = 2
+
+device = 'cpu'
 
 
-# Create LSTM
+# Create Bidirectional-LSTM
 # N*1*28(sequences)*28(features)
-class RNN_LSTM(nn.Module):
+class BRNN(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, num_classes):
-        super(RNN_LSTM, self).__init__()
+        super(BRNN, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size * sequence_length, num_classes)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True, bidirectional=True)
+        self.fc = nn.Linear(hidden_size * 2, num_classes)
 
     def forward(self, x):
         # Set initial hidden and cell states
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+        h0 = torch.zeros(self.num_layers * 2, x.size(0), self.hidden_size).to(device)
+        c0 = torch.zeros(self.num_layers * 2, x.size(0), self.hidden_size).to(device)
 
         # Forward propagate LSTM
-        out, _ = self.lstm(
-            x, (h0, c0)
-        )  # out: tensor of shape (batch_size, seq_length, hidden_size)
-        out = out.reshape(out.shape[0], -1)
+        out, _ = self.lstm(x, (h0, c0))  # out: tensor of shape (batch_size, seq_length, hidden_size)
 
         # Decode the hidden state of the last time step
         out = self.fc(out[:, -1, :])
@@ -47,8 +46,6 @@ class RNN_LSTM(nn.Module):
 
 # Set device
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = 'cpu'
-
 
 
 # Load data
@@ -60,8 +57,7 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=Tr
 numpy array 형태로 데이터를 받기 때문에 transform을 이용하여 tensor 형태로 받아옴
 '''
 # Initialize network
-model = RNN_LSTM(input_size, hidden_size, num_layers, num_classes).to(device)
-
+model = BRNN(input_size, hidden_size, num_layers, num_classes).to(device)
 
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -112,5 +108,5 @@ def check_accuracy(loader, model):
 # check_accuracy(train_loader, model)
 # check_accuracy(test_loader, model)
 
-print(f"Accuracy on training set: {check_accuracy(train_loader, model)*100:2f}")
-print(f"Accuracy on test set: {check_accuracy(test_loader, model)*100:.2f}")
+print(f"Accuracy on training set: {check_accuracy(train_loader, model) * 100:2f}")
+print(f"Accuracy on test set: {check_accuracy(test_loader, model) * 100:.2f}")
