@@ -1,15 +1,23 @@
+from PIL import Image
 import os
-import numpy as np
-import cv2
+from tqdm import tqdm
+root_dir='C:/Users/all7j/PycharmProjects/torch_tutorials/dataset/train/train/'
+file_list= os.listdir(root_dir)
+save_path='C:/Users/all7j/PycharmProjects/torch_tutorials/dataset/cats_dogs/resized/'
 
-src = cv2.imread(os.getcwd()+'/dataset/train/train/cat.0.jpg', cv2.IMREAD_GRAYSCALE)
+if not os.path.exists(save_path):
+    os.mkdir(save_path)
 
-dst = cv2.resize(src, dsize=(128, 128), interpolation=cv2.INTER_AREA)
-dst2 = cv2.resize(src, dsize=(0,0), fx=0.3, fy=0.7, interpolation=cv2.INTER_LINEAR)
+print("Resizing... ")
+for file in tqdm(file_list):
 
-cv2.imshow("src", src)
-cv2.imshow("dst", dst)
-cv2.imshow("dst2", dst2)
+    image=Image.open(root_dir+file)
+    image=image.resize((256, 256))
+    image=image.rotate(-90)
 
-cv2.waitKey()
-cv2.destroyAllWindows()
+    # Change format JPG to PNG
+    file = file[:-3] + "png"
+    save_point= save_path+file
+
+    image.save(save_point)
+print('Done')
