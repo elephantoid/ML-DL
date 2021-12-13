@@ -9,7 +9,7 @@ train_DogCats = pd.DataFrame(columns=['file_name', 'target'])
 # print(train_DogCats)
 
 # load file names
-filenames = os.listdir(os.getcwd()+'/dataset/train/train')
+filenames = os.listdir("C:/Users/all7j/PycharmProjects/datasets/cats_dogs/resized/")
 categories = []
 for filename in filenames:
     category = filename.split('.')[0]
@@ -24,6 +24,6 @@ df = pd.DataFrame({
 })
 
 
-print(train_DogCats.head())
-print(train_DogCats.tail())
-train_DogCats.to_csv('DogandCat.csv')
+print(df.head())
+print(df.tail())
+df.to_csv('DogsandCats.csv')
