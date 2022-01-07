@@ -1,7 +1,7 @@
 import torch
 
 def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
-    if box_format == "midpoint":
+    if box_format == "midpoint": # (X,Y,W,H) yolo format
         box1_x1 = boxes_preds[..., 0:1] - boxes_preds[..., 2:3] / 2
         box1_y1 = boxes_preds[..., 1:2] - boxes_preds[..., 3:4] / 2
         box1_x2 = boxes_preds[..., 0:1] + boxes_preds[..., 2:3] / 2
@@ -12,7 +12,7 @@ def intersection_over_union(boxes_preds, boxes_labels, box_format="midpoint"):
         box2_x2 = boxes_labels[..., 0:1] + boxes_labels[..., 2:3] / 2
         box2_y2 = boxes_labels[..., 1:2] + boxes_labels[..., 3:4] / 2
 
-    if box_format =="corners":
+    elif box_format =="corners": # (X1, Y1, X2, Y2) 좌상단 우하단
         # boxes_preds shape is (N, 4) where N is the number of bboxes
         # boxes_labels shape is (N, 4)
         box1_x1 = boxes_preds[..., 0:1]
